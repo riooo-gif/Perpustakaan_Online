@@ -1,76 +1,240 @@
 <?php
-// koneksi ke database
+
+// =====================================
+// KONEKSI DATABASE
+// =====================================
+
+// menghubungkan file koneksi.php
 include '../config/koneksi.php';
 
-// ambil data peminjaman + gabung ke tabel buku
+
+// =====================================
+// AMBIL DATA PEMINJAMAN + JOIN BUKU
+// =====================================
+
+// JOIN digunakan untuk menggabungkan tabel peminjaman dan buku
+// supaya judul buku bisa ditampilkan
+
 $query = mysqli_query($conn, "
-SELECT peminjaman.*, buku.judul 
-FROM peminjaman 
+
+SELECT peminjaman.*, buku.judul
+
+FROM peminjaman
+
 JOIN buku ON peminjaman.buku_id = buku.id
+
 ");
+
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<script src="https://cdn.tailwindcss.com"></script>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Data Peminjaman</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
 <body class="bg-gray-100">
 
-<div class="max-w-5xl mx-auto mt-10 bg-white p-6 rounded shadow">
 
-<h1 class="text-xl font-bold mb-4">Data Peminjaman</h1>
+<!-- ===================================== -->
+<!-- CONTAINER -->
+<!-- ===================================== -->
 
-<!-- tombol menuju form tambah -->
-<a href="tambah_peminjaman.php" 
-class="bg-green-500 text-white px-4 py-2 rounded">
-+ Pinjam Buku
-</a>
+<div class="max-w-6xl mx-auto mt-10 bg-white p-6 rounded-lg shadow">
 
-<table class="w-full mt-4 border">
-<tr class="bg-gray-200">
-    <th class="p-2">Nama</th>
-    <th class="p-2">Buku</th>
-    <th class="p-2">Tgl Pinjam</th>
-    <th class="p-2">Tgl Kembali</th>
-    <th class="p-2">Status</th>
-</tr>
-
-<?php while($row = mysqli_fetch_assoc($query)) { ?>
-<tr class="border-t">
-    <!-- tampilkan nama peminjam -->
-    <td class="p-2"><?= $row['nama_peminjam']; ?></td>
-
-    <!-- hasil JOIN: ambil judul dari tabel buku -->
-    <td class="p-2"><?= $row['judul']; ?></td>
-
-    <!-- tanggal pinjam -->
-    <td class="p-2"><?= $row['tanggal_pinjam']; ?></td>
-
-    <!-- tanggal kembali -->
-    <td class="p-2"><?= $row['tanggal_kembali']; ?></td>
-
-    <!-- status pinjaman -->
-    <td class="p-2"><?= $row['status']; ?></td>
     
-</tr>
+    <!-- ===================================== -->
+    <!-- HEADER -->
+    <!-- ===================================== -->
 
-<tr class="bg-gray-200">
-    <th>Nama</th>
-    <th>Buku</th>
-    <th>Tgl Pinjam</th>
-    <th>Tgl Kembali</th>
-    <th>Status</th>
-    <th>Denda</th>
-    <th>Aksi</th>
-</tr>
-<?php } ?>
+    <div class="flex justify-between items-center mb-6">
+
+        <h1 class="text-2xl font-bold">
+            📚 Data Peminjaman
+        </h1>
 
 
-</table>
+        <!-- tombol menuju form tambah peminjaman -->
+        <a href="tambah_peminjaman.php"
+        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+
+            + Pinjam Buku
+
+        </a>
+
+    </div>
+
+
+        <a href="export_pdf.php"
+
+         class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded inline-block mb-4">
+
+         Export PDF
+
+         </a>
+    <!-- ===================================== -->
+    <!-- TABEL -->
+    <!-- ===================================== -->
+
+    <table class="w-full border border-gray-300">
+
+        
+        <!-- HEADER TABEL -->
+        <thead class="bg-gray-200">
+
+            <tr>
+
+                <th class="p-3 border">No</th>
+
+                <th class="p-3 border">Nama Peminjam</th>
+
+                <th class="p-3 border">Judul Buku</th>
+
+                <th class="p-3 border">Tanggal Pinjam</th>
+
+                <th class="p-3 border">Tanggal Kembali</th>
+
+                <th class="p-3 border">Status</th>
+
+                <th class="p-3 border">Denda</th>
+
+                <th class="p-3 border">Aksi</th>
+
+            </tr>
+
+        </thead>
+
+
+
+        <!-- ISI TABEL -->
+        <tbody>
+
+        <?php
+
+        // nomor urut
+        $no = 1;
+
+        // looping data dari database
+        while($row = mysqli_fetch_assoc($query)) {
+
+        ?>
+
+            <tr class="text-center hover:bg-gray-100">
+
+                
+                <!-- nomor -->
+                <td class="p-3 border">
+                    <?= $no++; ?>
+                </td>
+
+
+                <!-- nama peminjam -->
+                <td class="p-3 border">
+                    <?= $row['nama_peminjam']; ?>
+                </td>
+
+
+                <!-- judul buku -->
+                <td class="p-3 border">
+                    <?= $row['judul']; ?>
+                </td>
+
+
+                <!-- tanggal pinjam -->
+                <td class="p-3 border">
+                    <?= $row['tanggal_pinjam']; ?>
+                </td>
+
+
+                <!-- tanggal kembali -->
+                <td class="p-3 border">
+                    <?= $row['tanggal_kembali']; ?>
+                </td>
+
+
+                <!-- status -->
+                <td class="p-3 border">
+
+                    <?php if(strtolower($row['status']) == 'dipinjam') { ?>
+
+                        <span class="bg-yellow-400 text-white px-3 py-1 rounded">
+
+                            Dipinjam
+
+                        </span>
+
+                    <?php } else { ?>
+
+                        <span class="bg-green-500 text-white px-3 py-1 rounded">
+
+                            Kembali
+
+                        </span>
+
+                    <?php } ?>
+
+                </td>
+
+
+
+                <!-- denda -->
+                <td class="p-3 border">
+
+                    Rp <?= number_format($row['denda']); ?>
+
+                </td>
+
+
+
+                <!-- tombol aksi -->
+                <td class="p-3 border">
+
+
+                    <?php if(strtolower($row['status']) == 'dipinjam') { ?>
+
+                        
+                        <!-- tombol kembalikan -->
+                        <a href="../proses/kembalikan.php?id=<?= $row['id']; ?>"
+
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+
+                            Kembalikan
+
+                        </a>
+
+                    <?php } else { ?>
+
+                        
+                        <!-- kalau sudah kembali -->
+                        <span class="text-gray-500">
+
+                            Sudah Kembali
+
+                        </span>
+
+                    <?php } ?>
+
+
+                </td>
+
+            </tr>
+
+        <?php } ?>
+
+        </tbody>
+
+    </table>
 
 </div>
+
 </body>
 </html>
-

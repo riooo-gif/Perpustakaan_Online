@@ -1,7 +1,86 @@
 <?php
+
 include '../config/koneksi.php';
-$data = mysqli_query($conn, "SELECT * FROM buku");
+
+
+// ambil keyword search
+$search = isset($_GET['search']) ? $_GET['search'] : '';
 ?>
+
+<?php
+
+include '../config/koneksi.php';
+
+
+// =====================================
+// PAGINATION
+// =====================================
+
+// jumlah data per halaman
+$batas = 5;
+
+
+// ambil halaman aktif
+$halaman = isset($_GET['halaman'])
+
+? $_GET['halaman']
+
+: 1;
+
+
+// hitung posisi data awal
+$awal_data = ($halaman - 1) * $batas;
+
+
+// =====================================
+// SEARCH
+// =====================================
+
+$search = isset($_GET['search'])
+
+? $_GET['search']
+
+: '';
+
+
+// =====================================
+// QUERY DATA
+// =====================================
+
+$data = mysqli_query($conn, "
+
+SELECT * FROM buku
+
+WHERE judul LIKE '%$search%'
+
+LIMIT $awal_data, $batas
+
+");
+
+
+// =====================================
+// TOTAL DATA
+// =====================================
+
+$total_data = mysqli_num_rows(
+
+    mysqli_query($conn, "
+
+    SELECT * FROM buku
+
+    WHERE judul LIKE '%$search%'
+
+")
+
+);
+
+
+// hitung total halaman
+$total_halaman = ceil($total_data / $batas);
+?>
+
+
+
 
 <!DOCTYPE html>
 <html>
@@ -22,6 +101,23 @@ $data = mysqli_query($conn, "SELECT * FROM buku");
         </a>
     </div>
 
+    <form method="GET" class="mb-4">
+
+            <input type="text"
+
+                id="search"
+
+                placeholder="Cari buku..."
+
+                class="border p-2 rounded w-64 mb-4">
+                <button class="bg-blue-500 text-white px-4 py-2 rounded">
+
+                Cari
+
+            </button>
+
+    </form>
+
     <table class="w-full border border-gray-200 rounded overflow-hidden">
         <thead class="bg-gray-200">
             <tr>
@@ -29,10 +125,12 @@ $data = mysqli_query($conn, "SELECT * FROM buku");
                 <th class="p-3 text-left">Penulis</th>
                 <th class="p-3 text-left">Tahun</th>
                 <th class="p-3 text-center">Aksi</th>
+                <th class="p-3 text-left">Stok</th>
+                <th class="p-3">Cover</th>
             </tr>
         </thead>
 
-        <tbody>
+        <tbody id="hasil-search">
         <?php while($row = mysqli_fetch_assoc($data)) { ?>
             <tr class="border-t hover:bg-gray-50">
                 <td class="p-3"><?= $row['judul']; ?></td>
@@ -52,12 +150,97 @@ $data = mysqli_query($conn, "SELECT * FROM buku");
                     </a>
 
                 </td>
+                <td class="p-3"><?= $row['stok']; ?></td>
+
+                <td class="p-3">
+
+                    <img src="../uploads/<?= $row['cover']; ?>"
+
+                    width="70"
+
+                    class="rounded shadow">
+
+                </td>
             </tr>
         <?php } ?>
         </tbody>
     </table>
 
-</div>
+    <!-- PAGINATION -->
+<div class="flex gap-2 mt-6">
+
+
+<?php for($i = 1; $i <= $total_halaman; $i++) { ?>
+
+
+    <a href="?halaman=<?= $i; ?>&search=<?= $search; ?>"
+
+    class="px-4 py-2 border rounded
+
+    <?= ($halaman == $i)
+
+    ? 'bg-blue-500 text-white'
+
+    : 'bg-white'; ?>">
+
+        <?= $i; ?>
+
+        </a>
+
+
+        <?php } ?>
+
+
+        </div>
+
+        </div>
+
+        <script>
+
+        // ambil input search
+        const search = document.getElementById('search');
+
+
+        // event ketika mengetik
+        search.addEventListener('keyup', function(){
+
+    
+        // ambil isi input
+        let keyword = this.value;
+
+
+        // buat object ajax
+        let xhr = new XMLHttpRequest();
+
+
+        // request ke file ajax
+        xhr.open(
+
+        'GET',
+
+        'ajax_buku.php?search=' + keyword,
+
+        true
+
+        );
+
+
+        // ketika sukses
+        xhr.onload = function(){
+
+        
+        // tampilkan hasil ke tbody
+        document.getElementById('hasil-search').innerHTML = this.responseText;
+
+    }
+
+
+    // kirim request
+    xhr.send();
+
+});
+
+</script>
 
 </body>
 </html>
