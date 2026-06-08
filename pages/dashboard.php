@@ -40,6 +40,56 @@ $totalPinjam = mysqli_num_rows($pinjam);
 
 <?php
 
+// TOTAL STOCK SEMUA BUKU
+$queryTotalStok = mysqli_query($conn, "
+
+SELECT SUM(stok) as total_stok
+
+FROM buku
+
+");
+
+
+// ambil hasil query
+$dataTotalStok = mysqli_fetch_assoc($queryTotalStok);
+
+
+// simpan ke variabel
+$totalStok = $dataTotalStok['total_stok'];
+
+?>
+
+<?php
+
+// TOTAL BUKU YANG SEDANG DIPINJAM
+$queryDipinjam = mysqli_query($conn, "
+
+SELECT COUNT(*) as total_dipinjam
+
+FROM peminjaman
+
+WHERE status='dipinjam'
+
+");
+
+
+// ambil hasil
+$dataDipinjam = mysqli_fetch_assoc($queryDipinjam);
+
+
+// simpan
+$totalDipinjam = $dataDipinjam['total_dipinjam'];
+
+?>
+
+<?php
+
+$totalTersedia = $totalStok;
+
+?>
+
+<?php
+
 // =====================================
 // TOTAL DIPINJAM
 // =====================================
@@ -80,7 +130,7 @@ $totalKembali = mysqli_num_rows($kembali);
 </head>
 
 
-<body id="body" class="bg-gray-100 transition-all duration-300">
+<body id="body" class="bg-white text-black transition-all duration-300">
 
 
 <!-- SIDEBAR -->
@@ -98,10 +148,64 @@ $totalKembali = mysqli_num_rows($kembali);
     <!-- CARD -->
     <div class="grid grid-cols-2 gap-6">
 
+    <!-- TOTAL STOCK -->
+    <div class="card bg-white p-6 rounded shadow">
+
+    <h2 class="text-gray-500">
+
+        Total Stock Buku
+
+    </h2>
+
+    <p class="text-4xl font-bold mt-2">
+
+        <?= $totalStok; ?>
+
+    </p>
+
+</div>
+
+
+
+<!-- BUKU TERSEDIA -->
+<div class="bg-white dark-card p-6 rounded shadow">
+
+    <h2 class="text-gray-500">
+
+        Buku Tersedia
+
+    </h2>
+
+    <p class="text-4xl font-bold mt-2">
+
+        <?= $totalTersedia; ?>
+
+    </p>
+
+</div>
+
+
+
+<!-- BUKU DIPINJAM -->
+<div class="card bg-white p-6 rounded shadow">
+
+    <h2 class="text-gray-500">
+
+        Sedang Dipinjam
+
+    </h2>
+
+    <p class="text-4xl font-bold mt-2">
+
+        <?= $totalDipinjam; ?>
+
+    </p>
+
+</div>
+
         
         <!-- total buku -->
-        <div class="bg-white p-6 rounded shadow">
-
+        <div class="card bg-white p-6 rounded shadow">
             <h2 class="text-gray-500">
 
                 Total Buku
@@ -119,7 +223,7 @@ $totalKembali = mysqli_num_rows($kembali);
 
 
         <!-- total peminjaman -->
-        <div class="bg-white p-6 rounded shadow">
+       <div class="card bg-white p-6 rounded shadow">
 
             <h2 class="text-gray-500">
 
@@ -136,7 +240,7 @@ $totalKembali = mysqli_num_rows($kembali);
         </div>
 
         <!-- CHART -->
-        <div class="bg-white p-6 rounded shadow mt-6">
+       <div class="card bg-white p-6 rounded shadow">
 
             <h2 class="text-xl font-bold mb-4">
 
@@ -194,15 +298,22 @@ new Chart(ctx, {
 
 <script>
 
-function toggleDark(){
+ffunction toggleDark() {
 
-    const body = document.getElementById('body');
+    document.body.classList.toggle('bg-black');
+    document.body.classList.toggle('text-white');
 
-    body.classList.toggle('bg-gray-900');
+    const cards = document.querySelectorAll('.card');
 
-    body.classList.toggle('text-black');
+    cards.forEach(card => {
+
+        card.classList.toggle('bg-white');
+        card.classList.toggle('bg-gray-800');
+
+    });
 
 }
+
 
 </script>
 

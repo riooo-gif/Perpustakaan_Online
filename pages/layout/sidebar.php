@@ -1,4 +1,4 @@
-<div class="w-64 h-screen bg-gray-900 text-white fixed">
+<div class="w-64 h-screen bg-lime-200 text-black fixed">
 
     
     <!-- LOGO -->

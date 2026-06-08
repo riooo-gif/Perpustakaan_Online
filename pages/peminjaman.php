@@ -1,11 +1,13 @@
 <?php
+session_start();
+include '../config/koneksi.php';
+
 
 // =====================================
 // KONEKSI DATABASE
 // =====================================
 
 // menghubungkan file koneksi.php
-include '../config/koneksi.php';
 
 
 // =====================================
@@ -44,6 +46,10 @@ JOIN buku ON peminjaman.buku_id = buku.id
 
 <body class="bg-gray-100">
 
+<?php include 'layout/sidebar.php'; ?>
+
+<div class="ml-64 p-6">
+
 
 <!-- ===================================== -->
 <!-- CONTAINER -->
@@ -74,13 +80,7 @@ JOIN buku ON peminjaman.buku_id = buku.id
     </div>
 
 
-        <a href="export_pdf.php"
-
-         class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded inline-block mb-4">
-
-         Export PDF
-
-         </a>
+        
     <!-- ===================================== -->
     <!-- TABEL -->
     <!-- ===================================== -->
@@ -233,6 +233,10 @@ JOIN buku ON peminjaman.buku_id = buku.id
         </tbody>
 
     </table>
+    </div>
+
+</body>
+</html>
 
 </div>
 

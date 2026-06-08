@@ -1,16 +1,8 @@
 <?php
 
-include '../config/koneksi.php';
-
-
-// ambil keyword search
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-?>
-
-<?php
+session_start();
 
 include '../config/koneksi.php';
-
 
 // =====================================
 // PAGINATION
@@ -90,6 +82,9 @@ $total_halaman = ceil($total_data / $batas);
 
 <body class="bg-gray-100">
 
+<?php include 'layout/sidebar.php'; ?>
+
+<div class="ml-64 p-6">
 <div class="max-w-5xl mx-auto mt-10 bg-white p-6 rounded-lg shadow">
 
     <div class="flex justify-between items-center mb-6">
@@ -103,15 +98,13 @@ $total_halaman = ceil($total_data / $batas);
 
     <form method="GET" class="mb-4">
 
-            <input type="text"
-
-                id="search"
-
-                placeholder="Cari buku..."
-
-                class="border p-2 rounded w-64 mb-4">
-                <button class="bg-blue-500 text-white px-4 py-2 rounded">
-
+           <input
+    type="text"
+    name="search"
+    id="search"
+    placeholder="Cari buku..."
+    class="border p-2 rounded w-64 mb-4">
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
                 Cari
 
             </button>
@@ -194,53 +187,40 @@ $total_halaman = ceil($total_data / $batas);
         </div>
 
         </div>
+<script>
 
-        <script>
+const search = document.getElementById('search');
 
-        // ambil input search
-        const search = document.getElementById('search');
+search.addEventListener('keyup', function(){
 
+    let keyword = this.value;
 
-        // event ketika mengetik
-        search.addEventListener('keyup', function(){
+    let xhr = new XMLHttpRequest();
 
-    
-        // ambil isi input
-        let keyword = this.value;
-
-
-        // buat object ajax
-        let xhr = new XMLHttpRequest();
-
-
-        // request ke file ajax
-        xhr.open(
-
+    xhr.open(
         'GET',
-
         'ajax_buku.php?search=' + keyword,
-
         true
+    );
 
-        );
+    xhr.onload = function(){
 
-
-        // ketika sukses
-        xhr.onload = function(){
-
-        
-        // tampilkan hasil ke tbody
-        document.getElementById('hasil-search').innerHTML = this.responseText;
+        document.getElementById(
+            'hasil-search'
+        ).innerHTML = this.responseText;
 
     }
 
-
-    // kirim request
     xhr.send();
 
 });
 
 </script>
+</div>
+
+</body>
+</html>
+
 
 </body>
 </html>
